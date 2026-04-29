@@ -1,10 +1,14 @@
 package com.evotrain.ml
 
-import java.io.*
+import java.io.File
+import java.io.RandomAccessFile
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.Random
+import javax.inject.Inject
 import kotlin.math.abs
 
-class WeightMutator {
+class WeightMutator @Inject constructor() {
 
     private val random = Random()
 
@@ -16,13 +20,13 @@ class WeightMutator {
 
     fun loadWeights(path: String): FloatArray {
         return File(path).readBytes().let { bytes ->
-            val buffer = java.nio.ByteBuffer.wrap(bytes).order(java.nio.ByteOrder.LITTLE_ENDIAN)
+            val buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
             FloatArray(bytes.size / 4) { buffer.float }
         }
     }
 
     fun saveWeights(weights: FloatArray, path: String) {
-        val buffer = java.nio.ByteBuffer.allocate(weights.size * 4).order(java.nio.ByteOrder.LITTLE_ENDIAN)
+        val buffer = ByteBuffer.allocate(weights.size * 4).order(ByteOrder.LITTLE_ENDIAN)
         weights.forEach { buffer.putFloat(it) }
         File(path).writeBytes(buffer.array())
     }

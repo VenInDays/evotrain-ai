@@ -3,13 +3,16 @@ package com.evotrain.ml
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Matrix
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import javax.inject.Inject
 
-class ImagePreprocessor(private val context: Context) {
+class ImagePreprocessor @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
 
     suspend fun preprocessImage(
         imagePath: String,
@@ -42,11 +45,16 @@ class ImagePreprocessor(private val context: Context) {
         options.inSampleSize = calculateInSampleSize(options, size, size)
         options.inJustDecodeBounds = false
 
-        val bitmap = BitmapFactory.decodeFile(path, options) ?: Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val bitmap = BitmapFactory.decodeFile(path, options)
+            ?: Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         return Bitmap.createScaledBitmap(bitmap, size, size, true)
     }
 
-    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+    private fun calculateInSampleSize(
+        options: BitmapFactory.Options,
+        reqWidth: Int,
+        reqHeight: Int
+    ): Int {
         val height = options.outHeight
         val width = options.outWidth
         var inSampleSize = 1
@@ -54,7 +62,9 @@ class ImagePreprocessor(private val context: Context) {
         if (height > reqHeight || width > reqWidth) {
             val halfHeight = height / 2
             val halfWidth = width / 2
-            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
+            while ((halfHeight / inSampleSize) >= reqHeight &&
+                (halfWidth / inSampleSize) >= reqWidth
+            ) {
                 inSampleSize *= 2
             }
         }
@@ -95,45 +105,50 @@ class ImagePreprocessor(private val context: Context) {
         return Pair(likeImages, nonlikeImages)
     }
 
-    suspend fun extractZipToDataset(zipInputStream: java.io.InputStream, datasetDir: File, onProgress: (Int) -> Unit): Pair<Int, Int> =
-        withContext(Dispatchers.IO) {
-            val likeDir = File(datasetDir, "like").apply { mkdirs() }
-            val nonlikeDir = File(datasetDir, "nonlike").apply { mkdirs() }
+    suspend fun extractZipToDataset(
+        zipInputStream: java.io.InputStream,
+        datasetDir: File,
+        onProgress: (Int) -> Unit
+    ): Pair<Int, Int> = withContext(Dispatchers.IO) {
+        val likeDir = File(datasetDir, "like").apply { mkdirs() }
+        val nonlikeDir = File(datasetDir, "nonlike").apply { mkdirs() }
 
-            var likeCount = 0
-            var nonlikeCount = 0
-            var totalFiles = 0
+        var likeCount = 0
+        var nonlikeCount = 0
+        var totalFiles = 0
 
-            java.util.zip.ZipInputStream(zipInputStream).use { zis ->
-                var entry = zis.nextEntry
-                while (entry != null) {
-                    if (!entry.isDirectory) {
-                        val name = entry.name.lowercase()
-                        val isLike = name.startsWith("like/") || name.startsWith("like\\")
-                        val isNonlike = name.startsWith("nonlike/") || name.startsWith("nonlike\\")
+        java.util.zip.ZipInputStream(zipInputStream).use { zis ->
+            var entry = zis.nextEntry
+            while (entry != null) {
+                if (!entry.isDirectory) {
+                    val name = entry.name.lowercase()
+                    val isLike = name.startsWith("like/") || name.startsWith("like\\")
+                    val isNonlike = name.startsWith("nonlike/") || name.startsWith("nonlike\\")
 
-                        if ((isLike || isNonlike) && name.substringAfterLast(".") in listOf("jpg", "jpeg", "png", "webp")) {
-                            val fileName = entry.name.substringAfterLast("/")
-                            val targetDir = if (isLike) likeDir else nonlikeDir
-                            val targetFile = File(targetDir, fileName)
+                    if ((isLike || isNonlike) &&
+                        name.substringAfterLast(".") in listOf("jpg", "jpeg", "png", "webp")
+                    ) {
+                        val fileName = entry.name.substringAfterLast("/")
+                        val targetDir = if (isLike) likeDir else nonlikeDir
+                        val targetFile = File(targetDir, fileName)
 
-                            FileOutputStream(targetFile).use { fos ->
-                                val buffer = ByteArray(4096)
-                                var len: Int
-                                while (zis.read(buffer).also { len = it } > 0) {
-                                    fos.write(buffer, 0, len)
-                                }
+                        FileOutputStream(targetFile).use { fos ->
+                            val buffer = ByteArray(4096)
+                            var len: Int
+                            while (zis.read(buffer).also { len = it } > 0) {
+                                fos.write(buffer, 0, len)
                             }
-
-                            if (isLike) likeCount++ else nonlikeCount++
-                            totalFiles++
-                            onProgress(totalFiles)
                         }
+
+                        if (isLike) likeCount++ else nonlikeCount++
+                        totalFiles++
+                        onProgress(totalFiles)
                     }
-                    zis.closeEntry()
-                    entry = zis.nextEntry
                 }
+                zis.closeEntry()
+                entry = zis.nextEntry
             }
-            Pair(likeCount, nonlikeCount)
         }
+        Pair(likeCount, nonlikeCount)
+    }
 }

@@ -168,42 +168,42 @@ class TrainingEngine @Inject constructor(
                 coroutineScope {
                     chunk.map { model ->
                         async(Dispatchers.Default) {
-                        val cnn = CNNModel(
-                            inputSize = config.imageSize,
-                            learningRate = config.learningRate
-                        )
-                        cnn.buildSimpleCNN()
+                            val cnn = CNNModel(
+                                inputSize = config.imageSize,
+                                learningRate = config.learningRate
+                            )
+                            cnn.buildSimpleCNN()
 
-                        val modelFile = File(model.tflitePath)
-                        if (modelFile.exists()) {
-                            try {
-                                cnn.loadModel(model.tflitePath)
-                            } catch (e: Exception) {
-                                cnn.buildSimpleCNN()
+                            val modelFile = File(model.tflitePath)
+                            if (modelFile.exists()) {
+                                try {
+                                    cnn.loadModel(model.tflitePath)
+                                } catch (e: Exception) {
+                                    cnn.buildSimpleCNN()
+                                }
                             }
-                        }
 
-                        cnnModels[model.id] = cnn
+                            cnnModels[model.id] = cnn
 
-                        cnn.trainBatch(trainInputs, trainLabels, config.epochsPerGeneration) { epoch, loss, acc ->
-                            modelProgressMap[model.id] = ModelTrainingProgress(
-                                modelId = model.id,
-                                modelName = model.name,
-                                currentEpoch = epoch + 1,
-                                totalEpochs = config.epochsPerGeneration,
-                                currentLoss = loss,
-                                currentAccuracy = acc,
-                                isTraining = true
-                            )
-                            _trainingProgress.value = _trainingProgress.value.copy(
-                                modelProgress = modelProgressMap.toMap()
-                            )
-                        }
+                            cnn.trainBatch(trainInputs, trainLabels, config.epochsPerGeneration) { epoch, loss, acc ->
+                                modelProgressMap[model.id] = ModelTrainingProgress(
+                                    modelId = model.id,
+                                    modelName = model.name,
+                                    currentEpoch = epoch + 1,
+                                    totalEpochs = config.epochsPerGeneration,
+                                    currentLoss = loss,
+                                    currentAccuracy = acc,
+                                    isTraining = true
+                                )
+                                _trainingProgress.value = _trainingProgress.value.copy(
+                                    modelProgress = modelProgressMap.toMap()
+                                )
+                            }
 
-                        cnn.saveModel(model.tflitePath)
+                            cnn.saveModel(model.tflitePath)
 
-                        val (accuracy, loss) = cnn.evaluate(valInputs, valLabels)
-                        repository.updateModelStats(model.id, accuracy, loss, config.epochsPerGeneration)
+                            val (accuracy, loss) = cnn.evaluate(valInputs, valLabels)
+                            repository.updateModelStats(model.id, accuracy, loss, config.epochsPerGeneration)
                         }
                     }.awaitAll()
                 }

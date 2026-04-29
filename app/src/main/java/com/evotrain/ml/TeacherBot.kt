@@ -1,12 +1,14 @@
 package com.evotrain.ml
 
+import java.util.Random
+import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-class TeacherBot {
+class TeacherBot @Inject constructor() {
 
-    private val random = java.util.Random()
+    private val random = Random()
 
     fun evaluate(
         model: CNNModel,
