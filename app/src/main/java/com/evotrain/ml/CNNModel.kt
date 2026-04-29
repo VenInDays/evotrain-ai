@@ -12,7 +12,7 @@ class CNNModel(
     val numClasses: Int = 2,
     val learningRate: Float = 0.001f
 ) {
-    private val random = Random.Default
+    private val random = Random()
 
     data class ConvLayer(
         val inputChannels: Int,

@@ -6,7 +6,7 @@ import kotlin.math.abs
 
 class WeightMutator {
 
-    private val random = Random.Default
+    private val random = Random()
 
     fun mutateWeights(weights: FloatArray, sigma: Float): FloatArray {
         return FloatArray(weights.size) { i ->

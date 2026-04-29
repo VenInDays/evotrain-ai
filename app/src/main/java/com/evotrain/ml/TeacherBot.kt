@@ -6,7 +6,7 @@ import kotlin.math.sqrt
 
 class TeacherBot {
 
-    private val random = java.util.Random.Default
+    private val random = java.util.Random()
 
     fun evaluate(
         model: CNNModel,

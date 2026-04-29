@@ -165,8 +165,9 @@ class TrainingEngine @Inject constructor(
 
             val parallelism = minOf(4, Runtime.getRuntime().availableProcessors())
             aliveModels.chunked(parallelism).forEach { chunk ->
-                chunk.map { model ->
-                    async(Dispatchers.Default) {
+                coroutineScope {
+                    chunk.map { model ->
+                        async(Dispatchers.Default) {
                         val cnn = CNNModel(
                             inputSize = config.imageSize,
                             learningRate = config.learningRate
@@ -203,8 +204,9 @@ class TrainingEngine @Inject constructor(
 
                         val (accuracy, loss) = cnn.evaluate(valInputs, valLabels)
                         repository.updateModelStats(model.id, accuracy, loss, config.epochsPerGeneration)
-                    }
-                }.awaitAll()
+                        }
+                    }.awaitAll()
+                }
             }
 
             val trainedModels = repository.getAliveModelsList()

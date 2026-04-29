@@ -22,7 +22,7 @@ class ModelLeaderboardAdapter : ListAdapter<AIModel, ModelLeaderboardAdapter.Vie
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), position)
+        holder.bind(getItem(position), position, itemCount)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -35,14 +35,14 @@ class ModelLeaderboardAdapter : ListAdapter<AIModel, ModelLeaderboardAdapter.Vie
         private val skullIcon: ImageView = view.findViewById(R.id.skullIcon)
         private val lineageIcon: ImageView = view.findViewById(R.id.lineageIcon)
 
-        fun bind(model: AIModel, position: Int) {
+        fun bind(model: AIModel, position: Int, totalItems: Int) {
             modelName.text = model.name
             generationBadge.text = "Gen ${model.generationNumber}"
             accuracyText.text = "${(model.accuracyScore * 100).toInt()}%"
             miniProgress.progress = (model.accuracyScore * 100).toInt()
 
             crownIcon.visibility = if (position == 0) View.VISIBLE else View.GONE
-            skullIcon.visibility = if (position >= itemCount - 3) View.VISIBLE else View.GONE
+            skullIcon.visibility = if (position >= totalItems - 3) View.VISIBLE else View.GONE
             lineageIcon.visibility = if (model.parentId != null) View.VISIBLE else View.GONE
 
             when (position) {
