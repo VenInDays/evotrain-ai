@@ -25,18 +25,6 @@ android {
         }
     }
 
-    buildTypes {
-        debug {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
-        }
-    }
-
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -49,6 +37,18 @@ android {
             storePassword System.getenv("KEYSTORE_PASSWORD") ?: 'evotrain2024'
             keyAlias System.getenv("KEY_ALIAS") ?: 'evotrain'
             keyPassword System.getenv("KEY_PASSWORD") ?: 'evotrain2024'
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
