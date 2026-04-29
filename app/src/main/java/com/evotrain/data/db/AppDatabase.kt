@@ -7,16 +7,18 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.evotrain.data.model.AIModel
 import com.evotrain.data.model.Generation
+import com.evotrain.data.model.InferenceResultEntity
 
 @Database(
-    entities = [AIModel::class, Generation::class],
-    version = 1,
+    entities = [AIModel::class, Generation::class, InferenceResultEntity::class],
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun modelDao(): ModelDao
     abstract fun generationDao(): GenerationDao
+    abstract fun inferenceResultDao(): InferenceResultDao
 
     companion object {
         @Volatile

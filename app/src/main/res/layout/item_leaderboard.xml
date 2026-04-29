@@ -9,61 +9,59 @@
     app:cardElevation="@dimen/card_elevation"
     app:strokeWidth="@dimen/card_stroke_width"
     app:strokeColor="@color/card_stroke_light"
-    android:layout_marginBottom="@dimen/margin_small">
+    android:layout_margin="4dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:padding="@dimen/padding_medium">
 
-        <ImageView
-            android:id="@+id/rankIcon"
-            android:layout_width="@dimen/icon_size_medium"
-            android:layout_height="@dimen/icon_size_medium"
-            android:contentDescription="Rank" />
+        <!-- Rank badge in top-right -->
+        <TextView
+            android:id="@+id/rankBadge"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:textSize="@dimen/text_caption"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-bold"
+            android:background="@drawable/bg_chip_training"
+            android:visibility="visible" />
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <!-- Model name (bold, 14sp) -->
+        <TextView
+            android:id="@+id/modelName"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="@dimen/margin_small">
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/rankBadge"
+            android:textSize="14sp"
+            android:textColor="@color/on_surface_light"
+            android:fontFamily="sans-serif-bold"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+        <!-- Status dot + Generation badge Chip row -->
+        <LinearLayout
+            android:id="@+id/statusRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/modelName"
+            android:layout_alignParentStart="true"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
 
-                <TextView
-                    android:id="@+id/modelName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="@dimen/text_body"
-                    android:textColor="@color/on_surface_light"
-                    android:maxLines="1"
-                    android:ellipsize="end" />
+            <!-- Animated status dot (8dp circle) -->
+            <View
+                android:id="@+id/statusDot"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/ic_status_dot" />
 
-                <ImageView
-                    android:id="@+id/crownIcon"
-                    android:layout_width="@dimen/icon_size_small"
-                    android:layout_height="@dimen/icon_size_small"
-                    android:src="@drawable/ic_crown"
-                    android:visibility="gone"
-                    android:contentDescription="Best" />
-
-                <ImageView
-                    android:id="@+id/skullIcon"
-                    android:layout_width="@dimen/icon_size_small"
-                    android:layout_height="@dimen/icon_size_small"
-                    android:src="@drawable/ic_skull"
-                    android:visibility="gone"
-                    android:contentDescription="Eliminated" />
-            </LinearLayout>
-
+            <!-- Generation badge Chip -->
             <TextView
                 android:id="@+id/generationBadge"
                 android:layout_width="wrap_content"
@@ -73,33 +71,71 @@
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="2dp"
                 android:textColor="@color/on_surface_variant_light"
-                android:layout_marginTop="2dp" />
-
-            <ProgressBar
-                android:id="@+id/miniProgressBar"
-                style="@android:style/Widget.ProgressBar.Horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_marginTop="4dp"
-                android:max="100" />
+                android:layout_marginStart="6dp" />
         </LinearLayout>
 
+        <!-- Parent name for clones -->
+        <TextView
+            android:id="@+id/parentName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/statusRow"
+            android:layout_alignParentStart="true"
+            android:textSize="@dimen/text_caption"
+            android:textColor="@color/on_surface_variant_light"
+            android:fontFamily="sans-serif-italic"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:visibility="gone" />
+
+        <!-- Accuracy % large bold text -->
         <TextView
             android:id="@+id/accuracyText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/text_title"
+            android:layout_below="@id/parentName"
+            android:layout_alignParentStart="true"
+            android:textSize="22sp"
             android:textColor="@color/accent_indigo"
-            android:fontFamily="sans-serif-medium"
-            android:minWidth="64dp"
-            android:gravity="end" />
+            android:fontFamily="sans-serif-bold"
+            android:layout_marginTop="6dp" />
 
-        <ImageView
-            android:id="@+id/lineageIcon"
-            android:layout_width="@dimen/icon_size_small"
-            android:layout_height="@dimen/icon_size_small"
-            android:src="@drawable/ic_lineage"
-            android:layout_marginStart="@dimen/margin_small"
-            android:contentDescription="Lineage" />
-    </LinearLayout>
+        <!-- Mini horizontal ProgressBar -->
+        <ProgressBar
+            android:id="@+id/miniProgressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_below="@id/accuracyText"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="4dp"
+            android:progressDrawable="@drawable/bg_progress_accent"
+            android:max="100" />
+
+        <!-- Epoch indicator -->
+        <TextView
+            android:id="@+id/epochIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/miniProgressBar"
+            android:layout_alignParentStart="true"
+            android:textSize="@dimen/text_caption"
+            android:textColor="@color/on_surface_variant_light"
+            android:layout_marginTop="2dp" />
+
+        <!-- Status label -->
+        <TextView
+            android:id="@+id/statusLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/miniProgressBar"
+            android:layout_alignParentEnd="true"
+            android:textSize="@dimen/text_caption"
+            android:background="@drawable/bg_chip_idle"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:textColor="@color/on_surface_variant_light"
+            android:layout_marginTop="2dp" />
+
+    </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

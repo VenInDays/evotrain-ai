@@ -1,171 +1,357 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     android:background="@color/background_light">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/padding_medium">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <!-- Section A: Generation Status Card -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- Sticky Header -->
+        <LinearLayout
+            android:id="@+id/stickyHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:cardElevation="@dimen/card_elevation"
-            app:strokeWidth="@dimen/card_stroke_width"
-            app:strokeColor="@color/card_stroke_light"
-            android:layout_marginBottom="@dimen/margin_medium">
+            android:orientation="vertical"
+            android:background="@color/surface_light"
+            android:elevation="4dp"
+            android:padding="@dimen/padding_medium">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/padding_medium">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/generation"
-                        android:textSize="@dimen/text_title"
-                        android:textColor="@color/on_surface_light"
-                        android:fontFamily="sans-serif-medium" />
-
-                    <TextView
-                        android:id="@+id/generationNumber"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textSize="36sp"
-                        android:textColor="@color/accent_indigo"
-                        android:fontFamily="sans-serif-bold" />
-                </LinearLayout>
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
                 <TextView
-                    android:id="@+id/statusChip"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/generationTitle"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/idle"
-                    android:textSize="@dimen/text_caption"
-                    android:background="@drawable/bg_chip_idle"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="4dp"
-                    android:textColor="@color/on_surface_variant_light"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:layout_marginBottom="@dimen/margin_small" />
-
-                <ProgressBar
-                    android:id="@+id/accuracyProgressBar"
-                    style="@android:style/Widget.ProgressBar.Horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/progress_bar_height"
-                    android:progressDrawable="@drawable/bg_progress_accent"
-                    android:max="100"
-                    android:progress="0" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="@dimen/margin_small">
-
-                    <TextView
-                        android:id="@+id/currentAccuracy"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="0%"
-                        android:textSize="@dimen/text_body"
-                        android:textColor="@color/accent_indigo" />
-
-                    <TextView
-                        android:id="@+id/etaText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textSize="@dimen/text_caption"
-                        android:textColor="@color/on_surface_variant_light" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Section B: Live Leaderboard -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/leaderboard"
-            android:textSize="@dimen/text_title"
-            android:textColor="@color/on_surface_light"
-            android:fontFamily="sans-serif-medium"
-            android:layout_marginBottom="@dimen/margin_small" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/leaderboardRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            android:layout_marginBottom="@dimen/margin_medium" />
-
-        <!-- Section C: Accuracy Chart -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/corner_radius"
-            app:cardElevation="@dimen/card_elevation"
-            app:strokeWidth="@dimen/card_stroke_width"
-            app:strokeColor="@color/card_stroke_light"
-            android:layout_marginBottom="@dimen/margin_medium">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/padding_medium">
+                    android:layout_weight="1"
+                    android:text="@string/generation_0"
+                    android:textSize="@dimen/text_heading"
+                    android:textColor="@color/on_surface_light"
+                    android:fontFamily="sans-serif-bold" />
 
                 <TextView
+                    android:id="@+id/bestAccuracyHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/accuracy_chart"
+                    android:text="@string/best_0_percent"
                     android:textSize="@dimen/text_body"
+                    android:textColor="@color/accent_indigo" />
+
+                <TextView
+                    android:id="@+id/targetAccuracyHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/target_90_percent"
+                    android:textSize="@dimen/text_caption"
+                    android:textColor="@color/on_surface_variant_light"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/overallProgress"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:progressDrawable="@drawable/bg_progress_accent"
+                android:max="100"
+                android:progress="0"
+                android:layout_marginTop="@dimen/margin_small" />
+        </LinearLayout>
+
+        <!-- Scrollable content -->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_medium">
+
+                <!-- Section A: Generation Status Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/corner_radius"
+                    app:cardElevation="@dimen/card_elevation"
+                    app:strokeWidth="@dimen/card_stroke_width"
+                    app:strokeColor="@color/card_stroke_light"
+                    android:layout_marginBottom="@dimen/margin_medium">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding_medium">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/generation"
+                                android:textSize="@dimen/text_title"
+                                android:textColor="@color/on_surface_light"
+                                android:fontFamily="sans-serif-medium" />
+
+                            <TextView
+                                android:id="@+id/generationNumber"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textSize="36sp"
+                                android:textColor="@color/accent_indigo"
+                                android:fontFamily="sans-serif-bold" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/statusChip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/idle"
+                            android:textSize="@dimen/text_caption"
+                            android:background="@drawable/bg_chip_idle"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="4dp"
+                            android:textColor="@color/on_surface_variant_light"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:layout_marginBottom="@dimen/margin_small" />
+
+                        <ProgressBar
+                            android:id="@+id/accuracyProgressBar"
+                            style="@android:style/Widget.ProgressBar.Horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/progress_bar_height"
+                            android:progressDrawable="@drawable/bg_progress_accent"
+                            android:max="100"
+                            android:progress="0" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="@dimen/margin_small">
+
+                            <TextView
+                                android:id="@+id/currentAccuracy"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="0%"
+                                android:textSize="@dimen/text_body"
+                                android:textColor="@color/accent_indigo" />
+
+                            <TextView
+                                android:id="@+id/etaText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textSize="@dimen/text_caption"
+                                android:textColor="@color/on_surface_variant_light" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Section B: Live Model Status Panel (2-column staggered grid) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/live_model_status"
+                    android:textSize="@dimen/text_title"
                     android:textColor="@color/on_surface_light"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginBottom="@dimen/margin_small" />
 
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/accuracyChart"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/leaderboardRecyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/chart_height" />
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_marginBottom="@dimen/margin_medium" />
+
+                <!-- Section C: Accuracy Chart -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/corner_radius"
+                    app:cardElevation="@dimen/card_elevation"
+                    app:strokeWidth="@dimen/card_stroke_width"
+                    app:strokeColor="@color/card_stroke_light"
+                    android:layout_marginBottom="@dimen/margin_medium">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding_medium">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/accuracy_chart"
+                            android:textSize="@dimen/text_body"
+                            android:textColor="@color/on_surface_light"
+                            android:fontFamily="sans-serif-medium"
+                            android:layout_marginBottom="@dimen/margin_small" />
+
+                        <com.github.mikephil.charting.charts.LineChart
+                            android:id="@+id/accuracyChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/chart_height" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Section D: Active Training Progress -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/active_training"
+                    android:textSize="@dimen/text_title"
+                    android:textColor="@color/on_surface_light"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginBottom="@dimen/margin_small" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/trainingCardsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_marginBottom="@dimen/margin_medium" />
+
+                <!-- Section E: Collapsible Generation History -->
+                <LinearLayout
+                    android:id="@+id/generationHistoryToggle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="@dimen/padding_small"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/generation_history"
+                        android:textSize="@dimen/text_title"
+                        android:textColor="@color/on_surface_light"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <ImageView
+                        android:id="@+id/historyArrow"
+                        android:layout_width="@dimen/icon_size_small"
+                        android:layout_height="@dimen/icon_size_small"
+                        android:src="@android:drawable/arrow_down_float"
+                        android:contentDescription="@string/expand_collapse"
+                        android:rotation="0" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/generationHistoryContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:layout_marginBottom="@dimen/margin_medium">
+
+                    <TextView
+                        android:id="@+id/generationHistoryText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/no_generation_history"
+                        android:textSize="@dimen/text_body"
+                        android:textColor="@color/on_surface_variant_light"
+                        android:padding="@dimen/padding_small" />
+                </LinearLayout>
+
+                <!-- Section F: Collapsible Training Log Panel -->
+                <LinearLayout
+                    android:id="@+id/trainingLogToggle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="@dimen/padding_small"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/training_log"
+                        android:textSize="@dimen/text_title"
+                        android:textColor="@color/on_surface_light"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <ImageView
+                        android:id="@+id/logArrow"
+                        android:layout_width="@dimen/icon_size_small"
+                        android:layout_height="@dimen/icon_size_small"
+                        android:src="@android:drawable/arrow_down_float"
+                        android:contentDescription="@string/expand_collapse"
+                        android:rotation="0" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/trainingLogContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="@dimen/corner_radius_small"
+                        app:cardElevation="@dimen/card_elevation"
+                        app:strokeWidth="@dimen/card_stroke_width"
+                        app:strokeColor="@color/card_stroke_light">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/logRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:nestedScrollingEnabled="false"
+                            android:padding="@dimen/padding_small" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Section D: Active Training Progress -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/active_training"
-            android:textSize="@dimen/text_title"
-            android:textColor="@color/on_surface_light"
-            android:fontFamily="sans-serif-medium"
-            android:layout_marginBottom="@dimen/margin_small" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/trainingCardsRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false" />
-
+        </androidx.core.widget.NestedScrollView>
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+    <!-- Test AI FAB -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabTestAi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/padding_medium"
+        android:contentDescription="@string/test_ai_title"
+        android:src="@drawable/ic_monitor"
+        app:backgroundTint="@color/accent_indigo"
+        app:tint="@color/white" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

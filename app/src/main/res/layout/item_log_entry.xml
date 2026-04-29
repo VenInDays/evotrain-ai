@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="4dp"
+    android:paddingHorizontal="@dimen/padding_small"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/logTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_caption"
+        android:textColor="@color/on_surface_variant_light"
+        android:fontFamily="sans-serif-monospace"
+        android:layout_marginEnd="8dp" />
+
+    <TextView
+        android:id="@+id/logLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_caption"
+        android:fontFamily="sans-serif-bold"
+        android:layout_marginEnd="6dp"
+        android:minWidth="48dp" />
+
+    <TextView
+        android:id="@+id/logMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="@dimen/text_caption"
+        android:textColor="@color/on_surface_light"
+        android:fontFamily="sans-serif-monospace"
+        android:maxLines="2"
+        android:ellipsize="end" />
+</LinearLayout>

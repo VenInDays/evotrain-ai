@@ -17,5 +17,16 @@ data class AIModel(
     val createdAt: Long,
     val isAlive: Boolean,
     val tflitePath: String,
-    val cloneIndex: Int = 0
+    val cloneIndex: Int = 0,
+    val precision: Float = 0f,
+    val recall: Float = 0f,
+    val f1Score: Float = 0f,
+    val truePositives: Int = 0,
+    val trueNegatives: Int = 0,
+    val falsePositives: Int = 0,
+    val falseNegatives: Int = 0,
+    val stopReason: String? = null,
+    val currentLearningRate: Float = 0.001f,
+    val mutationSigma: Float = 0.01f,
+    val parentIdName: String? = null
 )

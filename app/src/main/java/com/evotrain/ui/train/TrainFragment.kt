@@ -21,6 +21,8 @@ import coil.load
 import com.evotrain.R
 import com.evotrain.ml.TrainingConfig
 import com.evotrain.ml.TrainingPhase
+import com.evotrain.ui.inference.TestAiBottomSheet
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -45,6 +47,12 @@ class TrainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Test AI FAB
+        view.findViewById<FloatingActionButton>(R.id.fabTestAi)?.setOnClickListener {
+            val sheet = TestAiBottomSheet()
+            sheet.show(childFragmentManager, "TestAiBottomSheet")
+        }
 
         previewAdapter = ImagePreviewAdapter()
         view.findViewById<RecyclerView>(R.id.previewRecyclerView).apply {

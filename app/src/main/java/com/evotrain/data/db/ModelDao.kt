@@ -53,4 +53,22 @@ interface ModelDao {
 
     @Query("SELECT COUNT(*) FROM models WHERE isAlive = 1")
     suspend fun getAliveModelCount(): Int
+
+    @Query("UPDATE models SET precision = :precision, recall = :recall, f1Score = :f1, truePositives = :tp, trueNegatives = :tn, falsePositives = :fp, falseNegatives = :fn WHERE id = :id")
+    suspend fun updateConfusionStats(id: String, precision: Float, recall: Float, f1: Float, tp: Int, tn: Int, fp: Int, fn: Int)
+
+    @Query("UPDATE models SET stopReason = :reason WHERE id = :id")
+    suspend fun updateStopReason(id: String, reason: String?)
+
+    @Query("UPDATE models SET currentLearningRate = :lr WHERE id = :id")
+    suspend fun updateLearningRate(id: String, lr: Float)
+
+    @Query("UPDATE models SET mutationSigma = :sigma WHERE id = :id")
+    suspend fun updateMutationSigma(id: String, sigma: Float)
+
+    @Query("UPDATE models SET parentIdName = :parentName WHERE id = :id")
+    suspend fun updateParentIdName(id: String, parentName: String?)
+
+    @Query("SELECT * FROM models WHERE isAlive = 1 ORDER BY accuracyScore DESC")
+    fun getAliveModelsListSync(): List<AIModel>
 }

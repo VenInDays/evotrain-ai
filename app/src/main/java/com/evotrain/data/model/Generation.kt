@@ -13,5 +13,7 @@ data class Generation(
     val completedAt: Long?,
     val bestAccuracy: Float,
     val averageAccuracy: Float,
-    val survivorIds: String
+    val survivorIds: String,
+    val avgLoss: Float = 0f,
+    val duration: Long? = null
 )

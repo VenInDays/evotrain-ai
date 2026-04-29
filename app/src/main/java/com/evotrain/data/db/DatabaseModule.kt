@@ -34,4 +34,9 @@ object DatabaseModule {
     fun provideGenerationDao(database: AppDatabase): GenerationDao {
         return database.generationDao()
     }
+
+    @Provides
+    fun provideInferenceResultDao(database: AppDatabase): InferenceResultDao {
+        return database.inferenceResultDao()
+    }
 }

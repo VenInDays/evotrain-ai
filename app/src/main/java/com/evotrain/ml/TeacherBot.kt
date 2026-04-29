@@ -6,6 +6,16 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
+data class ModelScore(
+    val modelId: String,
+    val score: Float,
+    val accuracy: Float,
+    val precision: Float,
+    val recall: Float,
+    val f1Score: Float,
+    val tp: Int, val tn: Int, val fp: Int, val fn: Int
+)
+
 class TeacherBot @Inject constructor() {
 
     private val random = Random()
@@ -30,11 +40,29 @@ class TeacherBot @Inject constructor() {
         }
     }
 
+    fun scoreModel(
+        modelId: String,
+        model: CNNModel,
+        validationInputs: List<FloatArray>,
+        validationLabels: List<Int>
+    ): ModelScore {
+        if (validationInputs.isEmpty()) {
+            return ModelScore(modelId, 0f, 0f, 0f, 0f, 0f, 0, 0, 0, 0)
+        }
+        val (accuracy, _) = model.evaluate(validationInputs, validationLabels)
+        val cm = model.computeConfusionMatrix(validationInputs, validationLabels)
+        val score = 0.6f * accuracy + 0.2f * cm.precision + 0.2f * cm.recall
+        return ModelScore(modelId, score, accuracy, cm.precision, cm.recall, cm.f1Score,
+            cm.tp, cm.tn, cm.fp, cm.fn)
+    }
+
     fun createStratifiedSplit(
         inputs: List<FloatArray>,
         labels: List<Int>,
-        validationRatio: Float = 0.2f
+        validationRatio: Float = 0.2f,
+        seed: Long = System.currentTimeMillis()
     ): Pair<Pair<List<FloatArray>, List<Int>>, Pair<List<FloatArray>, List<Int>>> {
+        val seededRandom = Random(seed)
         val classIndices = labels.indices.groupBy { labels[it] }
 
         val trainInputs = mutableListOf<FloatArray>()
@@ -43,7 +71,7 @@ class TeacherBot @Inject constructor() {
         val valLabels = mutableListOf<Int>()
 
         for ((_, indices) in classIndices) {
-            val shuffled = indices.shuffled(random)
+            val shuffled = indices.shuffled(seededRandom)
             val splitPoint = (shuffled.size * validationRatio).toInt()
 
             for (i in shuffled.indices) {

@@ -63,4 +63,63 @@
     <string name="percent_sign">%</string>
     <string name="channel_name">evotrain_channel</string>
     <string name="no_images">No images</string>
+
+    <!-- Monitor tab - Sticky header -->
+    <string name="generation_0">Generation 0</string>
+    <string name="best_0_percent">Best: 0%</string>
+    <string name="target_90_percent">  Target: 90%</string>
+    <string name="generation_number_format">Generation %d</string>
+    <string name="best_accuracy_format">Best: %d%%</string>
+    <string name="target_accuracy_format">  Target: %d%%</string>
+
+    <!-- Monitor tab - Live Model Status Panel -->
+    <string name="live_model_status">Live Model Status</string>
+    <string name="generation_abbrev_format">Gen %d</string>
+    <string name="epoch_format">Epoch %d</string>
+    <string name="cloned_from_format">Clone of %s</string>
+
+    <!-- Model status labels -->
+    <string name="status_idle">IDLE</string>
+    <string name="status_training">TRAINING</string>
+    <string name="status_evaluating">EVALUATING</string>
+    <string name="status_survived">SURVIVED</string>
+    <string name="status_eliminated">ELIMINATED</string>
+    <string name="status_cloned">CLONED</string>
+
+    <!-- Monitor tab - Collapsible sections -->
+    <string name="generation_history">Generation History</string>
+    <string name="training_log">Training Log</string>
+    <string name="expand_collapse">Expand/Collapse</string>
+    <string name="no_generation_history">No generation history yet</string>
+
+    <!-- Test AI Bottom Sheet -->
+    <string name="test_ai_title">Test AI</string>
+    <string name="image_input">Image Input</string>
+    <string name="pick_from_gallery">Pick from Gallery</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="selected_image">Selected image</string>
+    <string name="model_selection">Model Selection</string>
+    <string name="best_model">Best Model</string>
+    <string name="test_all_models">Test All Models</string>
+    <string name="run_test">Run Test</string>
+    <string name="running_test">Running…</string>
+    <string name="save_result">Save result</string>
+    <string name="result_saved">Result saved</string>
+    <string name="history">History</string>
+    <string name="clear_history">Clear</string>
+    <string name="no_model_emoji">🧠</string>
+    <string name="train_model_first">Train a model first</string>
+    <string name="select_image_first">Select an image first</string>
+    <string name="confidence_percent_format">%d%% confidence</string>
+    <string name="like_confidence_format">Like: %d%%</string>
+    <string name="not_like_confidence_format">Not Like: %d%%</string>
+    <string name="model_generation_format">%1$s (Gen %2$d)</string>
+    <string name="response_time_ms">Response: %d ms</string>
+    <string name="majority_vote_format">%1$d/%2$d models say %3$s</string>
+    <string name="result_like_label">LIKE</string>
+    <string name="result_not_like_label">NOT LIKE</string>
+    <string name="consensus_confidence_format">Consensus: %d%% confidence</string>
+    <string name="individual_results">Individual Results</string>
+    <string name="recent_results">Recent Results</string>
+    <string name="no_history">No test history yet</string>
 </resources>

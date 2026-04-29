@@ -7,6 +7,13 @@ import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.min
 
+data class ConfusionMatrixResult(
+    val precision: Float,
+    val recall: Float,
+    val f1Score: Float,
+    val tp: Int, val tn: Int, val fp: Int, val fn: Int
+)
+
 class CNNModel(
     val inputSize: Int = 96,
     val numClasses: Int = 2,
@@ -313,6 +320,132 @@ class CNNModel(
                 layer.gradBiases[j] = 0f
             }
         }
+    }
+
+    fun trainBatchAdvanced(
+        inputs: List<FloatArray>,
+        labels: List<Int>,
+        epochs: Int = 1,
+        isTraining: Boolean = true,
+        onEpochComplete: (epoch: Int, loss: Float, accuracy: Float, currentLr: Float) -> Unit
+    ): String? { // returns stopReason or null
+        var bestAccuracy = 0f
+        var plateauCount = 0
+        var lastLoss = Float.MAX_VALUE
+        var prevLoss = Float.MAX_VALUE
+        var currentLr = learningRate
+        val minLr = 1e-6f
+
+        for (epoch in 0 until epochs) {
+            var totalLoss = 0f
+            var correct = 0
+
+            for (i in inputs.indices) {
+                val output = forward(inputs[i])
+                val predicted = output.indices.maxByOrNull { output[it] } ?: 0
+                if (predicted == labels[i]) correct++
+
+                val target = FloatArray(numClasses) { 0f }
+                target[labels[i]] = 1f
+                totalLoss += crossEntropyLoss(output, target)
+
+                val gradOutput = FloatArray(numClasses) { j -> output[j] - target[j] }
+                backpropDenseWithLr(gradOutput, currentLr)
+            }
+
+            val avgLoss = totalLoss / inputs.size
+            val accuracy = correct.toFloat() / inputs.size
+            onEpochComplete(epoch, avgLoss, accuracy, currentLr)
+
+            // Adaptive learning rate
+            if (avgLoss >= prevLoss) {
+                currentLr *= 0.7f
+                plateauCount++
+            } else if (prevLoss - avgLoss < 0.001f && epoch > 0) {
+                plateauCount++
+            } else {
+                plateauCount = 0
+            }
+
+            if (plateauCount >= 2 && currentLr > minLr) {
+                currentLr = (currentLr * 0.5f).coerceAtLeast(minLr)
+            }
+
+            if (currentLr < minLr) currentLr = minLr
+
+            // Early stopping
+            if (accuracy > bestAccuracy) {
+                bestAccuracy = accuracy
+                plateauCount = 0
+            } else {
+                plateauCount++
+            }
+
+            if (plateauCount >= 3) {
+                return "early_stop"
+            }
+
+            prevLoss = avgLoss
+            lastLoss = avgLoss
+        }
+        return null
+    }
+
+    private fun backpropDenseWithLr(gradOutput: FloatArray, lr: Float) {
+        var gradient = gradOutput
+
+        for (i in denseLayers.size - 1 downTo 0) {
+            val layer = denseLayers[i]
+            val input = layer.lastInput ?: return
+
+            if (layer.activation == "relu") {
+                gradient = FloatArray(gradient.size) { j -> gradient[j] * reluDerivative(layer.lastOutput!!)[j] }
+            }
+
+            for (o in 0 until layer.outputSize) {
+                for (inp in 0 until layer.inputSize) {
+                    layer.gradWeights[o * layer.inputSize + inp] += gradient[o] * input[inp]
+                }
+                layer.gradBiases[o] += gradient[o]
+            }
+
+            val newGradient = FloatArray(layer.inputSize)
+            for (inp in 0 until layer.inputSize) {
+                var sum = 0f
+                for (o in 0 until layer.outputSize) {
+                    sum += gradient[o] * layer.weights[o * layer.inputSize + inp]
+                }
+                newGradient[inp] = sum
+            }
+            gradient = newGradient
+
+            for (j in layer.weights.indices) {
+                layer.weights[j] -= lr * layer.gradWeights[j]
+                layer.gradWeights[j] = 0f
+            }
+            for (j in layer.biases.indices) {
+                layer.biases[j] -= lr * layer.gradBiases[j]
+                layer.gradBiases[j] = 0f
+            }
+        }
+    }
+
+    fun computeConfusionMatrix(inputs: List<FloatArray>, labels: List<Int>): ConfusionMatrixResult {
+        var tp = 0; var tn = 0; var fp = 0; var fn = 0
+        for (i in inputs.indices) {
+            val output = forward(inputs[i])
+            val predicted = output.indices.maxByOrNull { output[it] } ?: 0
+            when {
+                predicted == 1 && labels[i] == 1 -> tp++
+                predicted == 0 && labels[i] == 0 -> tn++
+                predicted == 1 && labels[i] == 0 -> fp++
+                else -> fn++
+            }
+        }
+        val precision = if (tp + fp > 0) tp.toFloat() / (tp + fp) else 0f
+        val recall = if (tp + fn > 0) tp.toFloat() / (tp + fn) else 0f
+        val f1 = if (precision + recall > 0) 2 * precision * recall / (precision + recall) else 0f
+        return ConfusionMatrixResult(precision, recall, f1, tp, tn, fp, fn)
     }
 
     private fun crossEntropyLoss(output: FloatArray, target: FloatArray): Float {

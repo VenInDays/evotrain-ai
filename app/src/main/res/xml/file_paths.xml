@@ -4,4 +4,5 @@
     <external-files-path name="dataset" path="dataset/" />
     <files-path name="internal_models" path="models/" />
     <files-path name="internal_dataset" path="dataset/" />
+    <cache-path name="cache_images" path="." />
 </paths>

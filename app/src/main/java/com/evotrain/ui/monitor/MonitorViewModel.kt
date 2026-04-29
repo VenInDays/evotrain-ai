@@ -7,8 +7,10 @@ import com.evotrain.data.model.Generation
 import com.evotrain.data.repository.ModelRepository
 import com.evotrain.ml.ModelTrainingProgress
 import com.evotrain.ml.TrainingEngine
+import com.evotrain.ml.TrainingLogger
 import com.evotrain.ml.TrainingPhase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,12 +37,15 @@ class MonitorViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MonitorUiState())
     val uiState: StateFlow<MonitorUiState> = _uiState
 
+    private val _logEntries = MutableStateFlow<List<TrainingLogger.LogEntry>>(emptyList())
+    val logEntries: StateFlow<List<TrainingLogger.LogEntry>> = _logEntries
+
     init {
         viewModelScope.launch {
             combine(
                 trainingEngine.trainingProgress,
-                repository.getAliveModels(),
-                repository.getAllGenerations()
+                repository.getAliveModels().flowOn(Dispatchers.IO).conflate(),
+                repository.getAllGenerations().flowOn(Dispatchers.IO).conflate()
             ) { progress, models, generations ->
                 _uiState.update { it.copy(
                     generationNumber = progress.generationNumber,
@@ -52,7 +57,15 @@ class MonitorViewModel @Inject constructor(
                     modelProgress = progress.modelProgress,
                     isRunning = progress.isRunning
                 )}
-            }.collect()
+            }.flowOn(Dispatchers.IO).collect {}
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            TrainingLogger.logs.collect { entry ->
+                _logEntries.update { (it + entry).takeLast(50) }
+            }
         }
     }
 }

@@ -1,9 +1,11 @@
 package com.evotrain.data.repository
 
 import com.evotrain.data.db.GenerationDao
+import com.evotrain.data.db.InferenceResultDao
 import com.evotrain.data.db.ModelDao
 import com.evotrain.data.model.AIModel
 import com.evotrain.data.model.Generation
+import com.evotrain.data.model.InferenceResultEntity
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 import javax.inject.Inject
@@ -12,7 +14,8 @@ import javax.inject.Singleton
 @Singleton
 class ModelRepository @Inject constructor(
     private val modelDao: ModelDao,
-    private val generationDao: GenerationDao
+    private val generationDao: GenerationDao,
+    private val inferenceResultDao: InferenceResultDao
 ) {
     fun getAliveModels(): Flow<List<AIModel>> = modelDao.getAliveModels()
     fun getAllModels(): Flow<List<AIModel>> = modelDao.getAllModels()
@@ -40,6 +43,18 @@ class ModelRepository @Inject constructor(
     suspend fun deleteAllModels() = modelDao.deleteAllModels()
     suspend fun getAliveModelCount(): Int = modelDao.getAliveModelCount()
 
+    suspend fun updateConfusionStats(id: String, precision: Float, recall: Float, f1: Float, tp: Int, tn: Int, fp: Int, fn: Int) =
+        modelDao.updateConfusionStats(id, precision, recall, f1, tp, tn, fp, fn)
+    suspend fun updateStopReason(id: String, reason: String?) = modelDao.updateStopReason(id, reason)
+    suspend fun updateLearningRate(id: String, lr: Float) = modelDao.updateLearningRate(id, lr)
+    suspend fun updateMutationSigma(id: String, sigma: Float) = modelDao.updateMutationSigma(id, sigma)
+    suspend fun updateParentIdName(id: String, parentName: String?) = modelDao.updateParentIdName(id, parentName)
+
+    suspend fun saveInferenceResult(result: InferenceResultEntity) = inferenceResultDao.insertResult(result)
+    suspend fun getRecentInferenceResults(limit: Int = 10) = inferenceResultDao.getRecentResults(limit)
+    fun getAllInferenceResults(): Flow<List<InferenceResultEntity>> = inferenceResultDao.getAllResults()
+    suspend fun deleteAllInferenceResults() = inferenceResultDao.deleteAllResults()
+
     fun createModel(
         name: String,
         generationNumber: Int,
@@ -48,7 +63,8 @@ class ModelRepository @Inject constructor(
         lossScore: Float = 1f,
         epochsTrained: Int = 0,
         tflitePath: String,
-        cloneIndex: Int = 0
+        cloneIndex: Int = 0,
+        mutationSigma: Float = 0.01f
     ): AIModel {
         return AIModel(
             id = UUID.randomUUID().toString(),
@@ -61,7 +77,8 @@ class ModelRepository @Inject constructor(
             createdAt = System.currentTimeMillis(),
             isAlive = true,
             tflitePath = tflitePath,
-            cloneIndex = cloneIndex
+            cloneIndex = cloneIndex,
+            mutationSigma = mutationSigma
         )
     }
 
