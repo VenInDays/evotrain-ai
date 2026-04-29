@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
@@ -22,10 +24,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Decode keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/release.keystore
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -36,56 +34,91 @@ jobs:
           KEY_ALIAS: evotrain
           KEY_PASSWORD: evotrain2024
 
-      - name: Sign APK with apksigner (v2+v3)
+      - name: Find APK
+        id: find_apk
         run: |
-          sudo apt-get update && sudo apt-get install -y apksigner || true
-          BUILD_TOOLS=$(ls -d /usr/local/lib/android/sdk/build-tools/* | sort -V | tail -1)
-          if [ -d "$BUILD_TOOLS" ]; then
-            echo "Using build-tools: $BUILD_TOOLS"
-            export PATH="$BUILD_TOOLS:$PATH"
-          fi
-          # Verify and re-sign with v2+v3 using apksigner
-          APK_PATH="app/build/outputs/apk/release/app-release-unsigned.apk"
-          if [ ! -f "$APK_PATH" ]; then
-            APK_PATH="app/build/outputs/apk/release/app-release.apk"
-          fi
-          if [ -f "$APK_PATH" ]; then
-            cp "$APK_PATH" app/build/outputs/apk/release/EvoTrain-AI-signed.apk
-            echo "APK found at $APK_PATH"
-          else
-            echo "Looking for APK..."
-            find app/build/outputs -name "*.apk" -type f
-            ACTUAL_APK=$(find app/build/outputs -name "*.apk" -type f | head -1)
-            if [ -n "$ACTUAL_APK" ]; then
-              cp "$ACTUAL_APK" app/build/outputs/apk/release/EvoTrain-AI-signed.apk
-              echo "Using APK: $ACTUAL_APK"
-            fi
-          fi
+          echo "Searching for APK files..."
+          find app/build/outputs -name "*.apk" -type f
+          APK_FILE=$(find app/build/outputs -name "*.apk" -type f | head -1)
+          echo "apk_path=$APK_FILE" >> $GITHUB_OUTPUT
+          echo "Found APK: $APK_FILE"
 
-      - name: List build outputs
-        run: find app/build/outputs -name "*.apk" -type f
+      - name: Verify and Re-sign APK with v2+v3
+        run: |
+          APK_PATH="${{ steps.find_apk.outputs.apk_path }}"
+          echo "APK to sign: $APK_PATH"
+          
+          # Find Android SDK build-tools
+          BUILD_TOOLS=$(ls -d ${ANDROID_HOME}/build-tools/* 2>/dev/null | sort -V | tail -1)
+          if [ -z "$BUILD_TOOLS" ]; then
+            BUILD_TOOLS=$(ls -d /usr/local/lib/android/sdk/build-tools/* 2>/dev/null | sort -V | tail -1)
+          fi
+          echo "Using build-tools: $BUILD_TOOLS"
+          
+          # Use zipalign first
+          "$BUILD_TOOLS/zipalign" -v 4 "$APK_PATH" app/build/outputs/apk/release/EvoTrain-AI-aligned.apk || cp "$APK_PATH" app/build/outputs/apk/release/EvoTrain-AI-aligned.apk
+          
+          # Sign with apksigner using v2+v3 schemes
+          "$BUILD_TOOLS/apksigner" sign \
+            --ks app/release.keystore \
+            --ks-pass pass:evotrain2024 \
+            --ks-key-alias evotrain \
+            --key-pass pass:evotrain2024 \
+            --v2-signing-enabled true \
+            --v3-signing-enabled true \
+            --out app/build/outputs/apk/release/EvoTrain-AI-v2v3-signed.apk \
+            app/build/outputs/apk/release/EvoTrain-AI-aligned.apk
+          
+          # Verify signature
+          "$BUILD_TOOLS/apksigner" verify -v app/build/outputs/apk/release/EvoTrain-AI-v2v3-signed.apk
+          
+          echo "APK signed with v2+v3 successfully!"
+
+      - name: List final artifacts
+        run: |
+          echo "=== Final APK files ==="
+          find app/build/outputs -name "*.apk" -type f -exec ls -lh {} \;
 
       - name: Create Release and Upload APK
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.0-${{ github.run_number }}
-          name: EvoTrain AI Build #${{ github.run_number }}
+          name: EvoTrain AI Build ${{ github.run_number }}
           body: |
             EvoTrain AI - Evolutionary AI Training System
             
             Built from commit: ${{ github.sha }}
             Build number: ${{ github.run_number }}
             
-            Signed with v2+v3 APK Signature Scheme
+            ✅ Signed with APK Signature Scheme v2+v3
           files: |
-            app/build/outputs/apk/release/*.apk
+            app/build/outputs/apk/release/EvoTrain-AI-v2v3-signed.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify Release
+      - name: Verify Release has APK
         run: |
-          echo "Checking release artifacts..."
-          sleep 5
-          gh release view v1.0.0-${{ github.run_number }} --repo ${{ github.repository }} || echo "Release check via CLI failed, checking via API..."
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          echo "Waiting for release to be available..."
+          sleep 10
+          
+          REPO="${{ github.repository }}"
+          TAG="v1.0.0-${{ github.run_number }}"
+          
+          echo "Checking release at: https://api.github.com/repos/$REPO/releases/tags/$TAG"
+          
+          RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/$REPO/releases/tags/$TAG")
+          
+          ASSET_COUNT=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('assets',[])))" 2>/dev/null || echo "0")
+          
+          if [ "$ASSET_COUNT" -gt "0" ]; then
+            echo "✅ Release confirmed with $ASSET_COUNT asset(s)!"
+            echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); [print(f\"  - {a['name']} ({a['size']} bytes)\") for a in d.get('assets',[])]" 2>/dev/null || true
+          else
+            echo "⚠️ Release found but no assets yet. Checking again..."
+            sleep 15
+            RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/$REPO/releases/tags/$TAG")
+            ASSET_COUNT=$(echo "$RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('assets',[])))" 2>/dev/null || echo "0")
+            echo "Asset count after retry: $ASSET_COUNT"
+          fi
