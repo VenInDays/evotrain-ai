@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/background_light">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_medium">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="@dimen/corner_radius"
+            app:cardElevation="@dimen/card_elevation"
+            app:strokeWidth="@dimen/card_stroke_width"
+            app:strokeColor="@color/card_stroke_light"
+            android:layout_marginBottom="@dimen/margin_medium">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_medium">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/target_accuracy"
+                    android:textSize="@dimen/text_body"
+                    android:textColor="@color/on_surface_light" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/sliderTargetAccuracy"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:valueFrom="10"
+                        android:valueTo="100"
+                        android:stepSize="5"
+                        android:value="90" />
+
+                    <TextView
+                        android:id="@+id/tvTargetAccuracy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="90%"
+                        android:textSize="@dimen/text_body"
+                        android:textColor="@color/accent_indigo"
+                        android:minWidth="48dp"
+                        android:gravity="end" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/epochs_per_generation"
+                    android:textSize="@dimen/text_body"
+                    android:textColor="@color/on_surface_light"
+                    android:layout_marginTop="@dimen/margin_small" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/sliderEpochs"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:valueFrom="1"
+                        android:valueTo="20"
+                        android:stepSize="1"
+                        android:value="5" />
+
+                    <TextView
+                        android:id="@+id/tvEpochs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="5"
+                        android:textSize="@dimen/text_body"
+                        android:textColor="@color/accent_indigo"
+                        android:minWidth="48dp"
+                        android:gravity="end" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/max_generations"
+                    android:textSize="@dimen/text_body"
+                    android:textColor="@color/on_surface_light"
+                    android:layout_marginTop="@dimen/margin_small" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/sliderMaxGenerations"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:valueFrom="1"
+                        android:valueTo="200"
+                        android:stepSize="1"
+                        android:value="50" />
+
+                    <TextView
+                        android:id="@+id/tvMaxGenerations"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="50"
+                        android:textSize="@dimen/text_body"
+                        android:textColor="@color/accent_indigo"
+                        android:minWidth="48dp"
+                        android:gravity="end" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/learning_rate"
+                    android:textSize="@dimen/text_body"
+                    android:textColor="@color/on_surface_light"
+                    android:layout_marginTop="@dimen/margin_small" />
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/dropdownLearningRate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:text="0.001" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/image_input_size"
+                    android:textSize="@dimen/text_body"
+                    android:textColor="@color/on_surface_light"
+                    android:layout_marginTop="@dimen/margin_small" />
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/dropdownImageSize"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:text="224x224" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchGpu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/use_gpu_delegate"
+                    android:checked="true"
+                    android:layout_marginTop="@dimen/margin_medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/batch_size"
+                    android:textSize="@dimen/text_body"
+                    android:textColor="@color/on_surface_light"
+                    android:layout_marginTop="@dimen/margin_small" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/sliderBatchSize"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:valueFrom="8"
+                        android:valueTo="64"
+                        android:stepSize="8"
+                        android:value="16" />
+
+                    <TextView
+                        android:id="@+id/tvBatchSize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="16"
+                        android:textSize="@dimen/text_body"
+                        android:textColor="@color/accent_indigo"
+                        android:minWidth="48dp"
+                        android:gravity="end" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mutation_strength"
+                    android:textSize="@dimen/text_body"
+                    android:textColor="@color/on_surface_light"
+                    android:layout_marginTop="@dimen/margin_small" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/sliderMutation"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:valueFrom="0.001"
+                        android:valueTo="0.1"
+                        android:stepSize="0.001"
+                        android:value="0.01" />
+
+                    <TextView
+                        android:id="@+id/tvMutation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.010"
+                        android:textSize="@dimen/text_body"
+                        android:textColor="@color/accent_indigo"
+                        android:minWidth="48dp"
+                        android:gravity="end" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnExportModel"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/export_best_model"
+            app:cornerRadius="@dimen/corner_radius"
+            app:icon="@drawable/ic_lineage"
+            android:layout_marginBottom="@dimen/margin_small" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClearData"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/clear_all_data"
+            app:cornerRadius="@dimen/corner_radius"
+            android:backgroundTint="@color/rose"
+            android:layout_marginBottom="@dimen/margin_medium" />
+
+        <TextView
+            android:id="@+id/tvAbout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_version"
+            android:textSize="@dimen/text_caption"
+            android:textColor="@color/on_surface_variant_light"
+            android:gravity="center" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

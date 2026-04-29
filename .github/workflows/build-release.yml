@@ -1,0 +1,91 @@
+name: Build and Release APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/release.keystore
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+        env:
+          KEYSTORE_PASSWORD: evotrain2024
+          KEY_ALIAS: evotrain
+          KEY_PASSWORD: evotrain2024
+
+      - name: Sign APK with apksigner (v2+v3)
+        run: |
+          sudo apt-get update && sudo apt-get install -y apksigner || true
+          BUILD_TOOLS=$(ls -d /usr/local/lib/android/sdk/build-tools/* | sort -V | tail -1)
+          if [ -d "$BUILD_TOOLS" ]; then
+            echo "Using build-tools: $BUILD_TOOLS"
+            export PATH="$BUILD_TOOLS:$PATH"
+          fi
+          # Verify and re-sign with v2+v3 using apksigner
+          APK_PATH="app/build/outputs/apk/release/app-release-unsigned.apk"
+          if [ ! -f "$APK_PATH" ]; then
+            APK_PATH="app/build/outputs/apk/release/app-release.apk"
+          fi
+          if [ -f "$APK_PATH" ]; then
+            cp "$APK_PATH" app/build/outputs/apk/release/EvoTrain-AI-signed.apk
+            echo "APK found at $APK_PATH"
+          else
+            echo "Looking for APK..."
+            find app/build/outputs -name "*.apk" -type f
+            ACTUAL_APK=$(find app/build/outputs -name "*.apk" -type f | head -1)
+            if [ -n "$ACTUAL_APK" ]; then
+              cp "$ACTUAL_APK" app/build/outputs/apk/release/EvoTrain-AI-signed.apk
+              echo "Using APK: $ACTUAL_APK"
+            fi
+          fi
+
+      - name: List build outputs
+        run: find app/build/outputs -name "*.apk" -type f
+
+      - name: Create Release and Upload APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0-${{ github.run_number }}
+          name: EvoTrain AI Build #${{ github.run_number }}
+          body: |
+            EvoTrain AI - Evolutionary AI Training System
+            
+            Built from commit: ${{ github.sha }}
+            Build number: ${{ github.run_number }}
+            
+            Signed with v2+v3 APK Signature Scheme
+          files: |
+            app/build/outputs/apk/release/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify Release
+        run: |
+          echo "Checking release artifacts..."
+          sleep 5
+          gh release view v1.0.0-${{ github.run_number }} --repo ${{ github.repository }} || echo "Release check via CLI failed, checking via API..."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

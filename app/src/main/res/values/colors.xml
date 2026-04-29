@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="warm_white">#FAFAFA</color>
+    <color name="deep_charcoal">#1C1C1E</color>
+    <color name="accent_indigo">#4F46E5</color>
+    <color name="soft_emerald">#10B981</color>
+    <color name="muted_amber">#F59E0B</color>
+    <color name="rose">#F43F5E</color>
+    <color name="background_light">#FAFAFA</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="on_surface_light">#1C1C1E</color>
+    <color name="on_surface_variant_light">#6B7280</color>
+    <color name="outline_light">#E5E7EB</color>
+    <color name="card_stroke_light">#F3F4F6</color>
+    <color name="gold">#FFD700</color>
+    <color name="silver">#C0C0C0</color>
+    <color name="bronze">#CD7F32</color>
+    <color name="elimination_red">#EF4444</color>
+    <color name="progress_background">#E5E7EB</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+</resources>

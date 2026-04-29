@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/trainFragment"
+        android:icon="@drawable/ic_train"
+        android:title="@string/tab_train" />
+    <item android:id="@+id/monitorFragment"
+        android:icon="@drawable/ic_monitor"
+        android:title="@string/tab_monitor" />
+    <item android:id="@+id/settingsFragment"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/tab_settings" />
+</menu>

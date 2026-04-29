@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="@dimen/padding_medium"
+    android:background="@color/background_light">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/inference"
+        android:textSize="@dimen/text_heading"
+        android:textColor="@color/on_surface_light"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="@dimen/margin_large" />
+
+    <ImageView
+        android:id="@+id/inferenceImage"
+        android:layout_width="224dp"
+        android:layout_height="224dp"
+        android:scaleType="centerCrop"
+        android:background="@drawable/bg_import_area"
+        android:contentDescription="Selected image"
+        android:layout_marginBottom="@dimen/margin_medium" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnPickImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pick_image"
+        app:cornerRadius="@dimen/corner_radius"
+        android:layout_marginBottom="@dimen/margin_medium" />
+
+    <ProgressBar
+        android:id="@+id/inferenceProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginBottom="@dimen/margin_medium" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/resultCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/corner_radius"
+        app:cardElevation="@dimen/card_elevation"
+        app:strokeWidth="@dimen/card_stroke_width"
+        app:strokeColor="@color/card_stroke_light"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/padding_medium"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/resultLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_title"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="@dimen/margin_small" />
+
+            <TextView
+                android:id="@+id/confidenceText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_body"
+                android:textColor="@color/on_surface_variant_light" />
+
+            <ProgressBar
+                android:id="@+id/likeConfidence"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="@dimen/margin_small"
+                android:max="100" />
+
+            <ProgressBar
+                android:id="@+id/nonlikeConfidence"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="@dimen/margin_small"
+                android:max="100" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

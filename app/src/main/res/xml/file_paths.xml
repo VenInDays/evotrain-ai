@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-files-path name="models" path="models/" />
+    <external-files-path name="dataset" path="dataset/" />
+    <files-path name="internal_models" path="models/" />
+    <files-path name="internal_dataset" path="dataset/" />
+</paths>
