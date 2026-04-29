@@ -247,7 +247,7 @@ class MonitorFragment : Fragment() {
                 color = resources.getColor(R.color.rose, null)
                 lineWidth = 1.5f
                 setDrawCircles(false)
-                setDrawDashedLine(floatArrayOf(5f, 3f), 0f)
+                enableDashedLine(5f, 3f, 0f)
                 axisDependency = com.github.mikephil.charting.components.YAxis.AxisDependency.RIGHT
             }
 

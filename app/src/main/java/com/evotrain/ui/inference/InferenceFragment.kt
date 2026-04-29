@@ -296,7 +296,6 @@ class TestAiBottomSheet : BottomSheetDialogFragment() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            gravity = Gravity.CENTER
             setPadding(0, dp(12), 0, dp(8))
         }
 
@@ -969,5 +968,9 @@ class TestAiBottomSheet : BottomSheetDialogFragment() {
         } catch (e: Exception) {
             null
         }
+    }
+
+    private fun dp(value: Int): Int {
+        return (value * resources.displayMetrics.density).toInt()
     }
 }
