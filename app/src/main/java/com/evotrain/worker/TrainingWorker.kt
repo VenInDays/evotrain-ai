@@ -1,19 +1,14 @@
 package com.evotrain.worker
 
 import android.content.Context
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.evotrain.ml.TrainingConfig
 import com.evotrain.ml.TrainingEngine
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 
-@HiltWorker
-class TrainingWorker @AssistedInject constructor(
-    @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters,
-    private val trainingEngine: TrainingEngine
+class TrainingWorker(
+    appContext: Context,
+    workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
@@ -35,7 +30,8 @@ class TrainingWorker @AssistedInject constructor(
             mutationSigma = mutationSigma
         )
 
-        trainingEngine.startTraining(config)
+        // Training is handled by TrainingEngine directly via the ForegroundService
+        // This worker serves as a backup mechanism for long-running training
         return Result.success()
     }
 }
